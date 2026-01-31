@@ -34,7 +34,7 @@
   </script>
   
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* THEME VARIABLES */
     :root {
       --bg: #0f0f13;
       --surface: #1a1a20;
@@ -47,7 +47,48 @@
       --warning: #ffdd57;
       --success: #23d160;
       --guest: #ff9500;
+      --story-ring: linear-gradient(45deg, #00d4ff, #7000ff, #ff00ff);
     }
+    
+    /* NEON NIGHT THEME */
+    [data-theme="neon"] {
+      --bg: #050508;
+      --surface: #0a0a12;
+      --surface-light: #151520;
+      --accent: #ff00ff;
+      --accent-secondary: #00ffff;
+      --text: #ffffff;
+      --text-sec: #8888a0;
+      --story-ring: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
+    }
+    
+    /* MATRIX GREEN THEME */
+    [data-theme="matrix"] {
+      --bg: #000000;
+      --surface: #0a0f0a;
+      --surface-light: #151f15;
+      --accent: #00ff41;
+      --accent-secondary: #008f11;
+      --text: #00ff41;
+      --text-sec: #008f11;
+      --danger: #ff0000;
+      --story-ring: linear-gradient(45deg, #00ff41, #008f11, #003b00);
+    }
+    
+    /* LIGHT THEME (CYBER LIGHT) */
+    [data-theme="light"] {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface-light: #e4e6eb;
+      --accent: #0077ff;
+      --accent-secondary: #00c6ff;
+      --text: #050505;
+      --text-sec: #65676b;
+      --danger: #ff4444;
+      --story-ring: linear-gradient(45deg, #0077ff, #00c6ff, #ff0055);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       font-family: 'Inter', sans-serif;
@@ -58,6 +99,7 @@
       background-image: 
         radial-gradient(circle at 10% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 20%),
         radial-gradient(circle at 90% 80%, rgba(112, 0, 255, 0.1) 0%, transparent 20%);
+      transition: all 0.3s ease;
     }
     
     .form-group { margin-bottom: 20px; }
@@ -182,7 +224,7 @@
     .nav {
       position: fixed;
       top: 0; left: 0; right: 0;
-      background: rgba(15, 15, 19, 0.8);
+      background: rgba(15, 15, 19, 0.9);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255,255,255,0.05);
       z-index: 100;
@@ -196,6 +238,73 @@
       align-items: center;
       justify-content: space-between;
       height: 70px;
+      gap: 20px;
+    }
+    
+    .nav-center {
+      flex: 1;
+      max-width: 400px;
+      position: relative;
+    }
+    
+    .search-box {
+      width: 100%;
+      position: relative;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 10px 40px 10px 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--surface-light);
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s;
+    }
+    
+    .search-box input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    }
+    
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 8px;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      display: none;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+    
+    .search-results.show {
+      display: block;
+    }
+    
+    .search-item {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .search-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    
+    .search-item:last-child {
+      border-bottom: none;
     }
     
     .brand {
@@ -338,13 +447,6 @@
     .btn-guest:hover {
       box-shadow: 0 10px 30px rgba(255, 149, 0, 0.3);
     }
-    .btn-permanent {
-      background: linear-gradient(135deg, var(--success), #1aa352);
-      color: white;
-    }
-    .btn-permanent:hover {
-      box-shadow: 0 10px 30px rgba(35, 209, 96, 0.3);
-    }
     .btn-small {
       padding: 6px 12px;
       font-size: 0.875rem;
@@ -458,9 +560,33 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
+    /* Avatar with Story Ring */
     .avatar-container {
       position: relative;
       display: inline-block;
+    }
+    
+    .avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      padding: 3px;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .avatar-wrapper:hover {
+      transform: scale(1.05);
+    }
+    
+    .avatar-wrapper.has-story {
+      background: var(--story-ring);
+      padding: 3px;
+    }
+    
+    .avatar-wrapper.viewed {
+      background: rgba(255,255,255,0.2);
     }
     
     .avatar {
@@ -474,7 +600,7 @@
       font-weight: bold;
       font-size: 1.2rem;
       flex-shrink: 0;
-      border: 2px solid rgba(255,255,255,0.1);
+      border: 2px solid var(--surface);
       overflow: hidden;
       position: relative;
     }
@@ -495,6 +621,23 @@
       background: linear-gradient(135deg, var(--guest), #cc7700);
     }
     
+    .add-story-btn {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: var(--accent);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      border: 2px solid var(--surface);
+      cursor: pointer;
+    }
+    
     .avatar-upload {
       position: absolute;
       bottom: 0;
@@ -510,6 +653,147 @@
       cursor: pointer;
       border: 3px solid var(--surface);
       font-size: 0.875rem;
+    }
+    
+    /* Stories Bar */
+    .stories-bar {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+      scrollbar-width: none;
+    }
+    .stories-bar::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .story-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      min-width: 72px;
+    }
+    
+    .story-username {
+      font-size: 0.75rem;
+      color: var(--text-sec);
+      max-width: 70px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    /* Story Viewer */
+    .story-viewer {
+      position: fixed;
+      inset: 0;
+      background: black;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .story-viewer.active {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .story-progress-container {
+      display: flex;
+      gap: 6px;
+      padding: 20px;
+      padding-top: 40px;
+    }
+    
+    .story-progress-bar {
+      flex: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .story-progress-fill {
+      height: 100%;
+      background: white;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+    
+    .story-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #000;
+    }
+    
+    .story-content img, .story-content video {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+    
+    .story-text-content {
+      font-size: 2rem;
+      text-align: center;
+      padding: 40px;
+      color: white;
+      font-weight: 700;
+    }
+    
+    .story-header {
+      position: absolute;
+      top: 60px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+    
+    .story-nav {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 30%;
+      cursor: pointer;
+      z-index: 5;
+    }
+    .story-nav.left { left: 0; }
+    .story-nav.right { right: 0; }
+    
+    .close-story {
+      position: absolute;
+      top: 40px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+      z-index: 1001;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .story-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+    }
+    
+    .story-time {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.7);
     }
     
     .profile-header { position: relative; }
@@ -796,39 +1080,70 @@
       gap: 16px;
     }
     
-    .create-account-hint {
-      text-align: center;
-      margin-top: 30px;
-      padding-top: 30px;
-      border-top: 1px solid rgba(255,255,255,0.1);
+    /* Theme Selector */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
     }
     
-    .create-account-hint h3 {
-      color: var(--success);
-      font-size: 1.25rem;
-      margin-bottom: 8px;
+    .theme-option {
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .theme-option:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    
+    .theme-option.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(0,212,255,0.3);
+    }
+    
+    .theme-option.active::after {
+      content: '✓';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--accent);
+      color: black;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      font-size: 12px;
+      font-weight: bold;
     }
     
-    .create-account-hint p {
-      color: var(--text-sec);
-      font-size: 0.875rem;
+    .theme-preview {
+      width: 100%;
+      height: 40px;
+      border-radius: 8px;
+      margin-bottom: 8px;
     }
     
-    .arrow-down {
-      font-size: 2rem;
-      color: var(--accent);
-      margin-top: 10px;
-      animation: bounce 2s infinite;
-    }
+    .theme-dark { background: linear-gradient(135deg, #0f0f13, #1a1a20); }
+    .theme-neon { background: linear-gradient(135deg, #050508, #0a0a12); border: 1px solid #ff00ff; }
+    .theme-matrix { background: linear-gradient(135deg, #000000, #0a0f0a); border: 1px solid #00ff41; }
+    .theme-light { background: linear-gradient(135deg, #f0f2f5, #ffffff); border: 1px solid #ddd; }
     
     @media (max-width: 768px) {
       .nav-links { display: none; }
+      .nav-center { display: none; }
       .dev-grid { grid-template-columns: 1fr; }
       .auth-card { padding: 24px; }
+      .mega-title { font-size: 3rem; }
     }
     
     .hidden { display: none !important; }
@@ -899,6 +1214,35 @@
       flex-wrap: wrap;
       margin-top: 12px;
     }
+    
+    .create-account-hint {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .create-account-hint h3 {
+      color: var(--success);
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .create-account-hint p {
+      color: var(--text-sec);
+      font-size: 0.875rem;
+    }
+    
+    .arrow-down {
+      font-size: 2rem;
+      color: var(--accent);
+      margin-top: 10px;
+      animation: bounce 2s infinite;
+    }
   </style>
 <base target="_blank">
 </head>
@@ -919,6 +1263,18 @@
   <div id="app" style="display:none;"></div>
   <div class="toast-container" id="toast-container"></div>
 
+  <!-- Story Viewer Overlay -->
+  <div class="story-viewer" id="story-viewer">
+    <button class="close-story" onclick="Stories.closeViewer()">×</button>
+    <div class="story-progress-container" id="story-progress"></div>
+    <div class="story-content" id="story-content" onclick="Stories.handleTap(event)">
+      <div class="story-nav left" onclick="Stories.prevStory(event)"></div>
+      <div class="story-nav right" onclick="Stories.nextStory(event)"></div>
+      <div class="story-header" id="story-header"></div>
+      <div id="story-media-container"></div>
+    </div>
+  </div>
+
   <script>
     'use strict';
     
@@ -931,6 +1287,20 @@
     // Bot control state
     let botControlMode = false;
     let controlledBotId = null;
+    
+    // Theme Manager
+    const ThemeManager = {
+      current: localStorage.getItem('ns_theme') || 'dark',
+      init() {
+        document.documentElement.setAttribute('data-theme', this.current);
+      },
+      set(theme) {
+        this.current = theme;
+        localStorage.setItem('ns_theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        Utils.showToast(`Theme changed to ${theme}`, 'success');
+      }
+    };
     
     const SystemLog = {
       logs: JSON.parse(localStorage.getItem('ns_logs') || '[]'),
@@ -968,9 +1338,10 @@
         USERS: 'ns_users_v4',
         POSTS: 'ns_posts_v4',
         CURRENT_USER: 'ns_current_v4',
-        BOTS: 'ns_bots_v1'
+        BOTS: 'ns_bots_v1',
+        STORIES: 'ns_stories_v1'
       },
-      cache: { users: null, posts: null, bots: null },
+      cache: { users: null, posts: null, bots: null, stories: null },
       
       async init() {
         if (useFirebase) {
@@ -981,6 +1352,9 @@
         // Keep bots online
         this.maintainBots();
         setInterval(() => this.maintainBots(), 30000);
+        // Clean old stories
+        this.cleanOldStories();
+        setInterval(() => this.cleanOldStories(), 60000);
       },
       
       initLocalStorage() {
@@ -1023,6 +1397,8 @@
           this.cache.users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           const postsSnapshot = await window.db.collection('posts').orderBy('createdAt', 'desc').get();
           this.cache.posts = postsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          const storiesSnapshot = await window.db.collection('stories').get();
+          this.cache.stories = storiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           
           if (!this.cache.users.find(u => u.username === 'jayjay')) {
             await this.createUser({
@@ -1057,6 +1433,19 @@
         if (updated) this.saveUsers(users);
       },
       
+      cleanOldStories() {
+        const stories = this.getStories();
+        const now = new Date();
+        const validStories = stories.filter(s => {
+          const storyTime = new Date(s.createdAt);
+          const hoursDiff = (now - storyTime) / (1000 * 60 * 60);
+          return hoursDiff < 24;
+        });
+        if (validStories.length !== stories.length) {
+          this.saveStories(validStories);
+        }
+      },
+      
       getUsers() {
         if (useFirebase && this.cache.users) return this.cache.users;
         try { return JSON.parse(localStorage.getItem(this.KEYS.USERS)) || []; }
@@ -1065,6 +1454,11 @@
       getPosts() {
         if (useFirebase && this.cache.posts) return this.cache.posts;
         try { return JSON.parse(localStorage.getItem(this.KEYS.POSTS)) || []; }
+        catch(e) { return []; }
+      },
+      getStories() {
+        if (useFirebase && this.cache.stories) return this.cache.stories;
+        try { return JSON.parse(localStorage.getItem(this.KEYS.STORIES)) || []; }
         catch(e) { return []; }
       },
       getCurrentUser() {
@@ -1092,6 +1486,18 @@
           posts.forEach(post => {
             const ref = window.db.collection('posts').doc(post.id);
             batch.set(ref, post);
+          });
+          await batch.commit().catch(() => {});
+        }
+      },
+      async saveStories(stories) {
+        this.cache.stories = stories;
+        localStorage.setItem(this.KEYS.STORIES, JSON.stringify(stories));
+        if (useFirebase) {
+          const batch = window.db.batch();
+          stories.forEach(story => {
+            const ref = window.db.collection('stories').doc(story.id);
+            batch.set(ref, story);
           });
           await batch.commit().catch(() => {});
         }
@@ -1124,15 +1530,31 @@
       async deleteUser(userId) {
         const users = DB.getUsers().filter(u => u.id !== userId);
         const posts = DB.getPosts().filter(p => p.userId !== userId);
+        const stories = DB.getStories().filter(s => s.userId !== userId);
         await this.saveUsers(users);
         await this.savePosts(posts);
+        await this.saveStories(stories);
         return true;
+      },
+      
+      async createStory(storyData) {
+        const stories = this.getStories();
+        const newStory = {
+          id: useFirebase ? window.db.collection('stories').doc().id : Utils.generateId(),
+          ...storyData,
+          createdAt: new Date().toISOString(),
+          views: []
+        };
+        stories.push(newStory);
+        await this.saveStories(stories);
+        return newStory;
       },
       
       exportAll() {
         return {
           users: this.getUsers(),
           posts: this.getPosts(),
+          stories: this.getStories(),
           logs: SystemLog.logs,
           exportedAt: new Date().toISOString()
         };
@@ -1141,6 +1563,7 @@
         try {
           if (data.users) this.saveUsers(data.users);
           if (data.posts) this.savePosts(data.posts);
+          if (data.stories) this.saveStories(data.stories);
           if (data.logs) {
             SystemLog.logs = data.logs;
             localStorage.setItem('ns_logs', JSON.stringify(data.logs));
@@ -1239,7 +1662,6 @@
       },
       
       showAuth() {
-        // Show combined auth page
         document.getElementById('app').innerHTML = Views.renderAuthPage();
         Views.attachAuthListeners();
       }
@@ -1279,9 +1701,247 @@
       }
     };
     
+    // Search functionality
+    const Search = {
+      timeout: null,
+      handleInput(e) {
+        clearTimeout(this.timeout);
+        const query = e.target.value.toLowerCase().trim();
+        const resultsDiv = document.getElementById('search-results');
+        
+        if (!query) {
+          resultsDiv.classList.remove('show');
+          return;
+        }
+        
+        this.timeout = setTimeout(() => {
+          const users = DB.getUsers();
+          const matches = users.filter(u => 
+            (u.username.toLowerCase().includes(query) || 
+             u.displayName.toLowerCase().includes(query)) &&
+            !u.shadowBanned
+          ).slice(0, 5);
+          
+          if (matches.length === 0) {
+            resultsDiv.innerHTML = '<div class="search-item" style="color: var(--text-sec);">No users found</div>';
+          } else {
+            resultsDiv.innerHTML = matches.map(u => `
+              <div class="search-item" onclick="Router.navigate('profile/${u.username}'); document.getElementById('search-results').classList.remove('show');">
+                <div class="avatar small ${u.isBot ? 'bot' : ''} ${u.isGuest ? 'guest' : ''}">
+                  ${u.avatar ? `<img src="${u.avatar}">` : u.displayName[0].toUpperCase()}
+                </div>
+                <div>
+                  <div style="font-weight: 600;">${u.displayName}</div>
+                  <div style="font-size: 0.8rem; color: var(--text-sec);">@${u.username}</div>
+                </div>
+              </div>
+            `).join('');
+          }
+          resultsDiv.classList.add('show');
+        }, 300);
+      }
+    };
+    
+    // Stories functionality
+    const Stories = {
+      currentStoryIndex: 0,
+      currentUserStories: [],
+      progressInterval: null,
+      
+      hasStory(userId) {
+        const stories = DB.getStories();
+        const userStories = stories.filter(s => s.userId === userId);
+        if (userStories.length === 0) return false;
+        
+        // Check if current user viewed all
+        const unviewed = userStories.filter(s => !s.views.includes(currentUser.id));
+        return unviewed.length > 0;
+      },
+      
+      getUserStories(userId) {
+        return DB.getStories().filter(s => s.userId === userId).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      },
+      
+      renderStoriesBar() {
+        const users = DB.getUsers().filter(u => u.isOnline || u.lastActive);
+        const stories = DB.getStories();
+        
+        // Get users with active stories
+        const usersWithStories = users.filter(u => {
+          const userStories = stories.filter(s => s.userId === u.id);
+          return userStories.length > 0;
+        }).slice(0, 10);
+        
+        if (usersWithStories.length === 0 && !currentUser.isGuest) {
+          return '';
+        }
+        
+        return `
+          <div class="card stories-bar">
+            ${!currentUser.isGuest ? `
+              <div class="story-item" onclick="Stories.create()">
+                <div class="avatar-wrapper">
+                  <div class="avatar ${currentUser.isBot ? 'bot' : ''} ${currentUser.isGuest ? 'guest' : ''}">
+                    ${currentUser.avatar ? `<img src="${currentUser.avatar}">` : currentUser.displayName[0].toUpperCase()}
+                  </div>
+                  <div class="add-story-btn">+</div>
+                </div>
+                <span class="story-username">Add Story</span>
+              </div>
+            ` : ''}
+            ${usersWithStories.map(u => {
+              const hasUnviewed = Stories.hasStory(u.id);
+              return `
+                <div class="story-item" onclick="Stories.view('${u.id}')">
+                  <div class="avatar-wrapper ${hasUnviewed ? 'has-story' : 'viewed'}">
+                    <div class="avatar ${u.isBot ? 'bot' : ''} ${u.isGuest ? 'guest' : ''}">
+                      ${u.avatar ? `<img src="${u.avatar}">` : u.displayName[0].toUpperCase()}
+                    </div>
+                  </div>
+                  <span class="story-username">${u.displayName}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      },
+      
+      create() {
+        if (currentUser.isGuest) {
+          Utils.showToast('Guests cannot create stories', 'error');
+          return;
+        }
+        
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*,video/*';
+        input.onchange = async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          if (file.size > 10 * 1024 * 1024) {
+            Utils.showToast('File too large (max 10MB)', 'error');
+            return;
+          }
+          
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            await DB.createStory({
+              userId: currentUser.id,
+              type: file.type.startsWith('video/') ? 'video' : 'image',
+              mediaUrl: event.target.result,
+              text: ''
+            });
+            Utils.showToast('Story added! 🎉', 'success');
+            Router.navigate('/');
+          };
+          reader.readAsDataURL(file);
+        };
+        input.click();
+      },
+      
+      view(userId) {
+        const stories = this.getUserStories(userId);
+        if (stories.length === 0) return;
+        
+        this.currentUserStories = stories;
+        this.currentStoryIndex = 0;
+        this.showCurrentStory();
+        
+        document.getElementById('story-viewer').classList.add('active');
+        document.body.style.overflow = 'hidden';
+      },
+      
+      showCurrentStory() {
+        const story = this.currentUserStories[this.currentStoryIndex];
+        const user = DB.getUsers().find(u => u.id === story.userId);
+        
+        // Update progress bars
+        const progressContainer = document.getElementById('story-progress');
+        progressContainer.innerHTML = this.currentUserStories.map((s, i) => `
+          <div class="story-progress-bar">
+            <div class="story-progress-fill" id="progress-${i}" style="width: ${i < this.currentStoryIndex ? '100%' : '0%'}"></div>
+          </div>
+        `).join('');
+        
+        // Update content
+        const container = document.getElementById('story-media-container');
+        if (story.type === 'video') {
+          container.innerHTML = `<video src="${story.mediaUrl}" autoplay style="max-width: 100%; max-height: 100%;"></video>`;
+        } else {
+          container.innerHTML = `<img src="${story.mediaUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+        }
+        
+        // Update header
+        document.getElementById('story-header').innerHTML = `
+          <div class="story-info">
+            <div class="avatar small ${user.isBot ? 'bot' : ''} ${user.isGuest ? 'guest' : ''}">
+              ${user.avatar ? `<img src="${user.avatar}">` : user.displayName[0].toUpperCase()}
+            </div>
+            <div>
+              <div style="font-weight: 600;">${user.displayName}</div>
+              <div class="story-time">${Utils.formatDate(story.createdAt)}</div>
+            </div>
+          </div>
+        `;
+        
+        // Mark as viewed
+        if (!story.views.includes(currentUser.id)) {
+          story.views.push(currentUser.id);
+          DB.saveStories(DB.getStories());
+        }
+        
+        // Start progress
+        clearInterval(this.progressInterval);
+        let progress = 0;
+        this.progressInterval = setInterval(() => {
+          progress += 2;
+          document.getElementById(`progress-${this.currentStoryIndex}`).style.width = progress + '%';
+          if (progress >= 100) {
+            this.nextStory();
+          }
+        }, 100);
+      },
+      
+      nextStory(e) {
+        if (e) e.stopPropagation();
+        if (this.currentStoryIndex < this.currentUserStories.length - 1) {
+          this.currentStoryIndex++;
+          this.showCurrentStory();
+        } else {
+          this.closeViewer();
+        }
+      },
+      
+      prevStory(e) {
+        if (e) e.stopPropagation();
+        if (this.currentStoryIndex > 0) {
+          this.currentStoryIndex--;
+          this.showCurrentStory();
+        }
+      },
+      
+      handleTap(e) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        if (x < rect.width / 3) {
+          this.prevStory();
+        } else if (x > (rect.width / 3) * 2) {
+          this.nextStory();
+        }
+      },
+      
+      closeViewer() {
+        clearInterval(this.progressInterval);
+        document.getElementById('story-viewer').classList.remove('active');
+        document.body.style.overflow = '';
+        Router.navigate('/');
+      }
+    };
+    
     const Views = {
       async init() {
         await DB.init();
+        ThemeManager.init();
         document.getElementById('loading').style.display = 'none';
         document.getElementById('app').style.display = 'block';
         
@@ -1391,7 +2051,7 @@
                     <label>Password</label>
                     <input type="password" id="reg-password" required minlength="4" placeholder="Choose a password">
                   </div>
-                  <button type="button" class="btn btn-permanent w-full" onclick="Auth.handleRegister(event)">
+                  <button type="button" class="btn w-full" style="background: linear-gradient(135deg, var(--success), #1aa352);" onclick="Auth.handleRegister(event)">
                     💾 Permanent Save
                   </button>
                 </form>
@@ -1407,9 +2067,7 @@
         `;
       },
       
-      attachAuthListeners() {
-        // Any additional listeners can be attached here
-      },
+      attachAuthListeners() {},
       
       renderNav() {
         const isDev = currentUser?.isDev;
@@ -1428,6 +2086,14 @@
                 ${this.renderLogo()}
                 <span class="brand-text">NetSphere</span>
               </div>
+              
+              <div class="nav-center">
+                <div class="search-box">
+                  <input type="text" placeholder="🔍 Search users..." oninput="Search.handleInput(event)" id="search-input">
+                  <div class="search-results" id="search-results"></div>
+                </div>
+              </div>
+              
               <div class="nav-links">
                 <button class="nav-link" onclick="Router.navigate('/')">🏠 Home</button>
                 ${!isGuest ? `<button class="nav-link" onclick="Router.navigate('profile/${currentUser.username}')">👤 Profile</button>` : ''}
@@ -1472,6 +2138,34 @@
           <main class="main">
             <div class="card">
               <h2 style="margin-bottom:20px;">⚙️ Settings</h2>
+              
+              <!-- Theme Selector -->
+              <div class="settings-section">
+                <h3 style="margin-bottom:16px; color:var(--accent);">🎨 Theme</h3>
+                <p style="color:var(--text-sec); margin-bottom:12px; font-size:0.9rem;">Choose your interface style</p>
+                <div class="theme-grid">
+                  <div class="theme-option ${ThemeManager.current === 'dark' ? 'active' : ''}" onclick="ThemeManager.set('dark'); Router.navigate('settings')">
+                    <div class="theme-preview theme-dark"></div>
+                    <div style="font-weight:600; font-size:0.9rem;">Cyber Dark</div>
+                    <div style="font-size:0.8rem; color:var(--text-sec);">Default</div>
+                  </div>
+                  <div class="theme-option ${ThemeManager.current === 'neon' ? 'active' : ''}" onclick="ThemeManager.set('neon'); Router.navigate('settings')">
+                    <div class="theme-preview theme-neon"></div>
+                    <div style="font-weight:600; font-size:0.9rem;">Neon Night</div>
+                    <div style="font-size:0.8rem; color:var(--text-sec);">Pink/Cyan</div>
+                  </div>
+                  <div class="theme-option ${ThemeManager.current === 'matrix' ? 'active' : ''}" onclick="ThemeManager.set('matrix'); Router.navigate('settings')">
+                    <div class="theme-preview theme-matrix"></div>
+                    <div style="font-weight:600; font-size:0.9rem;">Matrix</div>
+                    <div style="font-size:0.8rem; color:var(--text-sec);">Green Terminal</div>
+                  </div>
+                  <div class="theme-option ${ThemeManager.current === 'light' ? 'active' : ''}" onclick="ThemeManager.set('light'); Router.navigate('settings')">
+                    <div class="theme-preview theme-light"></div>
+                    <div style="font-weight:600; font-size:0.9rem; color:var(--text);">Cyber Light</div>
+                    <div style="font-size:0.8rem; color:var(--text-sec);">White mode</div>
+                  </div>
+                </div>
+              </div>
               
               <div class="settings-section">
                 <h3 style="margin-bottom:16px; color:var(--accent);">Profile Picture</h3>
@@ -1573,6 +2267,9 @@
             
             ${banner}
             
+            <!-- Stories Bar -->
+            ${Stories.renderStoriesBar()}
+            
             ${!currentUser.isGuest ? `
             <div class="card">
               <div class="create-post">
@@ -1614,19 +2311,23 @@
         const canDelete = currentUser?.isDev || (!isPermanent && post.userId === currentUser?.id) || (botControlMode && post.userId === controlledBotId);
         const canEdit = currentUser?.isDev || post.userId === currentUser?.id || (botControlMode && post.userId === controlledBotId);
         
+        const hasStory = Stories.hasStory(author.id);
+        
         if (author.shadowBanned && post.userId !== currentUser?.id && !currentUser?.isDev) return '';
         
         return `
           <div class="card" data-post-id="${post.id}">
             <div class="post-header">
-              <div class="avatar ${author.isBot ? 'bot' : ''} ${author.isGuest ? 'guest' : ''}" onclick="Router.navigate('profile/${author.username}')" style="cursor:pointer;">
-                ${author.avatar 
-                  ? `<img src="${author.avatar}" style="width:100%; height:100%; object-fit:cover;">`
-                  : (author.displayName?.[0]?.toUpperCase() || 'U')
-                }
+              <div class="avatar-wrapper ${hasStory ? 'has-story' : ''}" onclick="event.stopPropagation(); ${hasStory ? `Stories.view('${author.id}')` : `Router.navigate('profile/${author.username}')`}">
+                <div class="avatar ${author.isBot ? 'bot' : ''} ${author.isGuest ? 'guest' : ''}" style="cursor:pointer;">
+                  ${author.avatar 
+                    ? `<img src="${author.avatar}" style="width:100%; height:100%; object-fit:cover;">`
+                    : (author.displayName?.[0]?.toUpperCase() || 'U')
+                  }
+                </div>
               </div>
-              <div class="post-meta">
-                <h4 onclick="Router.navigate('profile/${author.username}')" style="cursor:pointer; color:var(--text);">
+              <div class="post-meta" onclick="Router.navigate('profile/${author.username}')" style="cursor:pointer;">
+                <h4 style="color:var(--text);">
                   ${author.displayName || 'Unknown'}
                   ${author.isVerified ? '<span class="verified">✓</span>' : ''}
                   ${author.isDev ? '<span class="admin-badge">★</span>' : ''}
@@ -1677,7 +2378,7 @@
                 if (commenter.shadowBanned && c.userId !== currentUser?.id && !currentUser?.isDev) return '';
                 return `
                   <div class="comment">
-                    <div class="avatar small ${commenter.isBot ? 'bot' : ''} ${commenter.isGuest ? 'guest' : ''}">
+                    <div class="avatar small ${commenter.isBot ? 'bot' : ''} ${commenter.isGuest? 'guest' : ''}">
                       ${commenter.avatar ? `<img src="${commenter.avatar}">` : (commenter.displayName?.[0]?.toUpperCase() || 'U')}
                     </div>
                     <div style="background:var(--surface-light); padding:8px 12px; border-radius:12px; flex:1;">
@@ -1716,6 +2417,9 @@
           .filter(p => !p.userId.shadowBanned || currentUser?.isDev || p.userId === currentUser?.id)
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         
+        const userStories = Stories.getUserStories(profile.id);
+        const hasStories = userStories.length > 0;
+        
         if (profile.shadowBanned && profile.id !== currentUser?.id && !currentUser?.isDev) {
           Utils.showToast('User not found', 'error');
           Router.navigate('/');
@@ -1733,11 +2437,14 @@
               <div class="cover-image"></div>
               <div class="profile-info">
                 <div class="profile-avatar-wrapper">
-                  <div class="avatar large ${profile.isBot ? 'bot' : ''} ${profile.isGuest ? 'guest' : ''}">
-                    ${profile.avatar 
-                      ? `<img src="${profile.avatar}" style="width:100%; height:100%; object-fit:cover;">`
-                      : profile.displayName[0].toUpperCase()
-                    }
+                  <div class="avatar-wrapper ${hasStories ? 'has-story' : ''}" onclick="${hasStories ? `Stories.view('${profile.id}')` : ''}" style="cursor: ${hasStories ? 'pointer' : 'default'};">
+                    <div class="avatar large ${profile.isBot ? 'bot' : ''} ${profile.isGuest ? 'guest' : ''}">
+                      ${profile.avatar 
+                        ? `<img src="${profile.avatar}" style="width:100%; height:100%; object-fit:cover;">`
+                        : profile.displayName[0].toUpperCase()
+                      }
+                    </div>
+                    ${isOwn ? `<div class="add-story-btn" onclick="event.stopPropagation(); Stories.create()">+</div>` : ''}
                   </div>
                   ${currentUser?.isDev && profile.shadowBanned ? '<div style="position:absolute; bottom:0; right:-10px; background:var(--danger); color:white; padding:4px 8px; border-radius:8px; font-size:0.75rem; font-weight:bold;">SHADOW BANNED</div>' : ''}
                 </div>
@@ -1751,6 +2458,8 @@
                 <p style="color:var(--text-sec);">@${profile.username}</p>
                 ${profile.bio ? `<p style="margin-top:12px; color:var(--text);">${Utils.escapeHtml(profile.bio)}</p>` : ''}
                 ${profile.shadowBanned ? '<p style="color:var(--danger); font-size:0.875rem; margin-top:8px;">🔇 Account restricted</p>' : ''}
+                
+                ${hasStories ? `<button class="btn btn-small mt-4" onclick="Stories.view('${profile.id}')" style="background: linear-gradient(135deg, var(--accent), var(--accent-secondary));">📱 View Stories (${userStories.length})</button>` : ''}
                 
                 <div class="profile-stats">
                   <div onclick="Router.navigate('profile/${profile.username}')" style="cursor:pointer;">
@@ -2735,8 +3444,10 @@
         
         localStorage.removeItem(DB.KEYS.USERS);
         localStorage.removeItem(DB.KEYS.POSTS);
+        localStorage.removeItem(DB.KEYS.STORIES);
         localStorage.removeItem('ns_logs');
         localStorage.removeItem('ns_dev_unlocked');
+        localStorage.removeItem('ns_theme');
         SystemLog.add('SYSTEM', 'COMPLETE DATA PURGE');
         Utils.showToast('Everything deleted. Reloading...', 'error');
         setTimeout(() => location.reload(), 2000);
@@ -2751,6 +3462,14 @@
       Router.handle();
     });
     
+    // Close search when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-box')) {
+        const results = document.getElementById('search-results');
+        if (results) results.classList.remove('show');
+      }
+    });
+    
     window.Router = Router;
     window.Posts = Posts;
     window.Users = Users;
@@ -2759,6 +3478,9 @@
     window.Views = Views;
     window.SystemLog = SystemLog;
     window.DB = DB;
+    window.Stories = Stories;
+    window.Search = Search;
+    window.ThemeManager = ThemeManager;
   </script>
 </body>
 </html>
